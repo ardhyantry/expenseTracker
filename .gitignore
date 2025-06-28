@@ -14,3 +14,15 @@
 .cxx
 local.properties
 .idea/misc.xml
+# Android Studio & IntelliJ
+.idea/*
+*.iml
+
+# Gradle
+.gradle/
+build/
+local.properties
+
+# Other
+.DS_Store
+*.log
