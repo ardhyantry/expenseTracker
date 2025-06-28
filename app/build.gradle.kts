@@ -8,6 +8,10 @@ plugins {
 android {
     namespace = "com.bebas.expensetracker"
     compileSdk = 35
+    buildFeatures{
+        viewBinding = true
+        dataBinding = true
+    }
 
     defaultConfig {
         applicationId = "com.bebas.expensetracker"
