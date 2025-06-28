@@ -1,4 +1,4 @@
-package com.bebas.expensetracker.view
+package com.bebas.expensetracker.view.main
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
