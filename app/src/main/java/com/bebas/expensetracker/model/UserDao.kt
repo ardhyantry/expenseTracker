@@ -1,15 +1,16 @@
-package com.yourapp.expensetracker.model
+package com.bebas.expensetracker.model
 
 import androidx.room.*
+import com.bebas.expensetracker.model.User
 
 @Dao
 interface UserDao {
     @Insert
-    suspend fun insert(user: User)
+    fun insert(user: User)
 
     @Query("SELECT * FROM users WHERE username = :username LIMIT 1")
-    suspend fun getUserByUsername(username: String): User?
+    fun getUserByUsername(username: String): User?
 
     @Update
-    suspend fun update(user: User)
+    fun update(user: User)
 }

@@ -1,4 +1,4 @@
-package com.yourapp.expensetracker.model
+package com.bebas.expensetracker.model
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
@@ -6,14 +6,14 @@ import androidx.room.*
 @Dao
 interface BudgetDao {
     @Insert
-    suspend fun insert(budget: Budget)
+    fun insert(budget: Budget)
 
     @Update
-    suspend fun update(budget: Budget)
+    fun update(budget: Budget)
 
     @Query("SELECT * FROM budgets")
     fun getAllBudgets(): LiveData<List<Budget>>
 
     @Query("SELECT * FROM budgets WHERE id = :id")
-    suspend fun getBudgetById(id: Int): Budget
+    fun getBudgetById(id: Int): Budget
 }

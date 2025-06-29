@@ -1,4 +1,4 @@
-package com.yourapp.expensetracker.model
+package com.bebas.expensetracker.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
