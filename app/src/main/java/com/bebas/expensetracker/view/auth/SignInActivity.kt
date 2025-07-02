@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.bebas.expensetracker.viewmodel.AuthViewModel
 import com.yourapp.expensetracker.databinding.ActivitySignInBinding
-import com.yourapp.expensetracker.model.User
 import com.yourapp.expensetracker.ui.main.MainActivity
 import com.yourapp.expensetracker.utils.SessionManager
 

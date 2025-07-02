@@ -1,4 +1,4 @@
-package com.yourapp.expensetracker.ui.auth
+package com.bebas.expensetracker.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
