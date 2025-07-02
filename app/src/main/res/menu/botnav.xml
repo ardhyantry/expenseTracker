@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_main"
+    app:startDestination="@id/nav_expense">
+
+    <fragment
+        android:id="@+id/nav_expense"
+        android:name="com.yourapp.expensetracker.view.ExpenseFragment"
+        android:label="Expense" />
+
+    <fragment
+        android:id="@+id/nav_budget"
+        android:name="com.yourapp.expensetracker.view.BudgetFragment"
+        android:label="Budget" />
+
+    <fragment
+        android:id="@+id/nav_report"
+        android:name="com.yourapp.expensetracker.view.ReportFragment"
+        android:label="Report" />
+
+    <fragment
+        android:id="@+id/nav_profile"
+        android:name="com.yourapp.expensetracker.view.ProfileFragment"
+        android:label="Profile" />
+
+</navigation>
