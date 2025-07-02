@@ -3,8 +3,8 @@ package com.bebas.expensetracker.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.yourapp.expensetracker.model.AppDatabase
-import com.yourapp.expensetracker.model.User
+import com.bebas.expensetracker.model.AppDatabase
+import com.bebas.expensetracker.model.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
