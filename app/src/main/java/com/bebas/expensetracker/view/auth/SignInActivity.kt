@@ -1,4 +1,4 @@
-package com.bebas.expensetracker.ui.auth
+package com.yourapp.expensetracker.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,10 +6,9 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bebas.expensetracker.viewmodel.AuthViewModel
-import com.bebas.expensetracker.databinding.ActivitySignInBinding
-import com.bebas.expensetracker.view.main.MainActivity
-import com.bebas.expensetracker.util.SessionManager
-import com.google.android.gms.cast.framework.SessionManager
+import com.yourapp.expensetracker.databinding.ActivitySignInBinding
+import com.yourapp.expensetracker.ui.main.MainActivity
+import com.yourapp.expensetracker.utils.SessionManager
 
 class SignInActivity : AppCompatActivity() {
 

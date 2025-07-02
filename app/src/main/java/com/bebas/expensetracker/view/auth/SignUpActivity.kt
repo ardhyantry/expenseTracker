@@ -1,12 +1,12 @@
-package com.bebas.expensetracker.ui.auth
+package com.yourapp.expensetracker.ui.auth
 
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bebas.expensetracker.viewmodel.AuthViewModel
-import com.bebas.expensetracker.databinding.ActivitySignUpBinding
-import com.bebas.expensetracker.model.User
+import com.yourapp.expensetracker.databinding.ActivitySignUpBinding
+import com.yourapp.expensetracker.model.User
 
 class SignUpActivity : AppCompatActivity() {
 
