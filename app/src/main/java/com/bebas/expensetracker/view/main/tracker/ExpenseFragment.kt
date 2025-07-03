@@ -131,7 +131,7 @@ class ExpenseFragment : Fragment() {
                         if (totalSetelahTambah > budget.amount) {
                             Toast.makeText(
                                 requireContext(),
-                                "Total melebihi budget \"${budget.name}\" (maks. Rp ${sisa})",
+                                "Total melebihi budget \"${budget.name}\" (maks. Rp ${budget.amount}) dan sisa Rp. $sisa",
                                 Toast.LENGTH_LONG
                             ).show()
                         } else {
