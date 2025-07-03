@@ -32,7 +32,6 @@ class ProfileFragment : Fragment() {
         val userId = session.getUserId()
         val userDao = AppDatabase.getInstance(requireContext()).userDao()
 
-        // ambil data user dari DB
         lifecycleScope.launch {
             user = userDao.getUserById(userId) ?: return@launch
             binding.tvWelcome.text = "Hai, ${user.firstName} ${user.lastName}"
