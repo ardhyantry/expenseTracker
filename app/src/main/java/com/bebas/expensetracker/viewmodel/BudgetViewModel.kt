@@ -50,6 +50,7 @@ class BudgetViewModel(application: Application) : AndroidViewModel(application),
         }
     }
 
+
     fun getBudgetsForUser(userId: Int): LiveData<List<Budget>> {
         return budgetDao.getBudgetsByUser(userId)
     }
