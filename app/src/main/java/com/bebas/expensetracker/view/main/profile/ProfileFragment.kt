@@ -10,7 +10,7 @@ import com.bebas.expensetracker.databinding.FragmentProfileBinding
 import com.bebas.expensetracker.model.AppDatabase
 import com.bebas.expensetracker.model.User
 import com.bebas.expensetracker.util.SessionManager
-import com.bebas.expensetracker.view.auth.LoginActivity
+import com.bebas.expensetracker.view.auth.SignInActivity
 import kotlinx.coroutines.launch
 
 class ProfileFragment : Fragment() {
@@ -70,7 +70,7 @@ class ProfileFragment : Fragment() {
         // tombol LOGOUT
         binding.btnSignOut.setOnClickListener {
             session.clearSession()
-            startActivity(Intent(requireContext(), LoginActivity::class.java))
+            startActivity(Intent(requireContext(), SignInActivity::class.java))
             requireActivity().finish()
         }
     }

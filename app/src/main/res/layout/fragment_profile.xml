@@ -5,7 +5,6 @@
     <data>
         <!-- Tidak diperlukan variabel khusus -->
     </data>
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,6 +15,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -24,6 +24,12 @@
                 android:textStyle="bold"
                 android:layout_marginBottom="24dp" />
 
+            <TextView
+                android:id="@+id/tvWelcome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hai, User"
+                android:textSize="16sp" />
             <!-- Old Password -->
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
