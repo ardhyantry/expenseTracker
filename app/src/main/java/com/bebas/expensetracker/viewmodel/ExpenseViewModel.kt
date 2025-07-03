@@ -36,6 +36,15 @@ class ExpenseViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    fun getTotalUsedByBudget(budgetId: Int, callback: (Int) -> Unit) {
+        launch {
+            val total = dao.getTotalUsedByBudget(budgetId) ?: 0
+            withContext(Dispatchers.Main) {
+                callback(total)
+            }
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         job.cancel()

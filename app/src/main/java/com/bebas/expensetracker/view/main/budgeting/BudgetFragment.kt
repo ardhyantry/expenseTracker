@@ -16,6 +16,7 @@ import android.widget.EditText
 import android.widget.Toast
 import com.bebas.expensetracker.R
 import com.bebas.expensetracker.util.SessionManager
+import com.bebas.expensetracker.viewmodel.ExpenseViewModel
 
 class BudgetFragment : Fragment() {
 
@@ -24,6 +25,7 @@ class BudgetFragment : Fragment() {
 
     private lateinit var budgetAdapter: BudgetAdapter
     private val budgetViewModel: BudgetViewModel by viewModels()
+    private val expenseViewModel: ExpenseViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -100,7 +102,16 @@ class BudgetFragment : Fragment() {
                 if (existingBudget == null) {
                     budgetViewModel.insert(budget)
                 } else {
-                    budgetViewModel.update(budget)
+                    expenseViewModel.getTotalExpenseForBudget(userId, existingBudget.id) { totalUsed ->
+                        if (amount < totalUsed) {
+                            Toast.makeText(context,
+                                "Budget tidak boleh lebih kecil dari total pengeluaran (Rp $totalUsed)",
+                                Toast.LENGTH_LONG).show()
+                            return@getTotalExpenseForBudget
+                        }
+
+                        budgetViewModel.update(budget)
+                    }
                 }
             }
             .setNegativeButton("Batal", null)

@@ -32,6 +32,9 @@ class ReportFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        var totalPengeluaran = 0
+        var totalBudget = 0
+
         sessionManager = SessionManager(requireContext())
         userId = sessionManager.getUserId()
 
@@ -48,6 +51,7 @@ class ReportFragment : Fragment() {
             var counter = 0
 
             budgets.forEach { budget ->
+                totalBudget += budget.amount
                 expenseViewModel.getTotalExpenseForBudget(userId, budget.id) { totalUsed ->
                     val item = ReportItem(budget, totalUsed)
                     reportList.add(item)
@@ -56,7 +60,7 @@ class ReportFragment : Fragment() {
 
                     if (counter == budgets.size) {
                         reportAdapter.submitList(reportList)
-                        binding.tvTotalPengeluaran.text = "Total Pengeluaran: Rp $totalPengeluaran"
+                        binding.tvTotalPengeluaran.text = "Total Pengeluaran: Rp %,d / Rp %,d".format(totalPengeluaran, totalBudget)
                     }
                 }
             }

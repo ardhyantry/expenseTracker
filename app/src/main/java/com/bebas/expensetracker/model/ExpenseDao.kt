@@ -20,4 +20,10 @@ interface ExpenseDao {
 
     @Query("SELECT * FROM expenses WHERE userId = :userId")
     fun getExpensesByUser(userId: Int): LiveData<List<Expense>>
+
+    @Query("SELECT SUM(amount) FROM expenses WHERE budgetId = :budgetId")
+    fun getTotalUsedByBudgetLive(budgetId: Int): LiveData<Int?>
+
+    @Query("SELECT SUM(amount) FROM expenses WHERE budgetId = :budgetId")
+    fun getTotalUsedByBudget(budgetId: Int): Int?
 }

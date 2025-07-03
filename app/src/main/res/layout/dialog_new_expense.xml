@@ -1,22 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp">
 
+    <TextView
+        android:id="@+id/tvBudgetInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Budget: - / Rp -"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
     <Spinner
         android:id="@+id/spinnerBudget"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp" />
+        android:layout_marginBottom="16dp" />
+
+    <ProgressBar
+        android:id="@+id/budgetProgressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:progress="0"
+        android:max="100" />
 
     <EditText
         android:id="@+id/etAmount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Nominal (Rp)"
-        android:inputType="number" />
+        android:inputType="number"
+        android:layout_marginBottom="16dp" />
 
     <EditText
         android:id="@+id/etNote"
