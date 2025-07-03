@@ -5,11 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.widget.Spinner
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bebas.expensetracker.R
 import com.bebas.expensetracker.databinding.FragmentExpenseBinding
 import com.bebas.expensetracker.model.Expense
 import com.bebas.expensetracker.util.DateUtils
@@ -23,7 +25,9 @@ class ExpenseFragment : Fragment() {
     private lateinit var binding: FragmentExpenseBinding
     private lateinit var expenseViewModel: ExpenseViewModel
     private lateinit var budgetViewModel: BudgetViewModel
+    private lateinit var session: SessionManager
     private lateinit var adapter: ExpenseAdapter
+    private var userId: Int = -1
     private val budgetMap = mutableMapOf<Int, String>()
 
     override fun onCreateView(
@@ -35,24 +39,30 @@ class ExpenseFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        session = SessionManager(requireContext())
+        userId = session.getUserId()
+
         expenseViewModel = ViewModelProvider(this)[ExpenseViewModel::class.java]
         budgetViewModel = ViewModelProvider(this)[BudgetViewModel::class.java]
-        val userId = SessionManager(requireContext()).getUserId()
 
-        val budgetMap = mutableMapOf<Int, String>()
+        adapter = ExpenseAdapter(
+            onNominalClick = { showDetailDialog(it) },
+            budgetIdToNameMap = budgetMap
+        )
 
-        adapter = ExpenseAdapter(onItemClick = { showDetailDialog(it) }, budgetIdToNameMap = budgetMap)
         binding.rvExpense.layoutManager = LinearLayoutManager(requireContext())
         binding.rvExpense.adapter = adapter
 
+        // Observasi data budget
         budgetViewModel.getBudgetsForUser(userId).observe(viewLifecycleOwner) { budgets ->
             budgetMap.clear()
             budgets.forEach { budgetMap[it.id] = it.name }
             adapter.notifyDataSetChanged()
         }
 
-        expenseViewModel.getExpensesForUser(userId).observe(viewLifecycleOwner) {
-            adapter.submitList(it)
+        // Observasi data expense
+        expenseViewModel.getExpensesForUser(userId).observe(viewLifecycleOwner) { expenses ->
+            adapter.submitList(expenses.sortedByDescending { it.timestamp })
         }
 
         binding.fabAddExpense.setOnClickListener {
@@ -66,11 +76,11 @@ class ExpenseFragment : Fragment() {
         val nominal = "Rp %,d".format(expense.amount)
 
         val message = """
-        📅 Tanggal     : $tanggal
-        🧾 Nominal     : $nominal
-        📂 Budget      : $budgetName
-        📝 Keterangan  : ${expense.description}
-    """.trimIndent()
+            📅 Tanggal     : $tanggal
+            💾 Nominal     : $nominal
+            📂 Budget      : $budgetName
+            📝 Keterangan  : ${expense.description}
+        """.trimIndent()
 
         AlertDialog.Builder(requireContext())
             .setTitle("📊 Detail Pengeluaran")
@@ -79,14 +89,13 @@ class ExpenseFragment : Fragment() {
             .show()
     }
 
-
-
     private fun showAddExpenseDialog() {
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_new_expense, null)
-        val spinner = dialogView.findViewById<Spinner>(R.id.spinnerBudget)
-        val etAmount = dialogView.findViewById<EditText>(R.id.etAmount)
-        val etNote = dialogView.findViewById<EditText>(R.id.etNote)
-        val userId = SessionManager(requireContext()).getUserId()
+        val dialogView = LayoutInflater.from(requireContext())
+            .inflate(com.bebas.expensetracker.R.layout.dialog_new_expense, null)
+
+        val spinner = dialogView.findViewById<Spinner>(com.bebas.expensetracker.R.id.spinnerBudget)
+        val etAmount = dialogView.findViewById<EditText>(com.bebas.expensetracker.R.id.etAmount)
+        val etNote = dialogView.findViewById<EditText>(com.bebas.expensetracker.R.id.etNote)
 
         val budgetNames = mutableListOf<String>()
         val budgetIds = mutableListOf<Int>()
@@ -98,9 +107,10 @@ class ExpenseFragment : Fragment() {
                 budgetNames.add(it.name)
                 budgetIds.add(it.id)
             }
-            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, budgetNames)
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            spinner.adapter = adapter
+
+            val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, budgetNames)
+            spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = spinnerAdapter
         }
 
         AlertDialog.Builder(requireContext())
@@ -124,33 +134,15 @@ class ExpenseFragment : Fragment() {
                 }
 
                 val expense = Expense(
+                    userId = userId,
                     budgetId = budgetId,
                     amount = nominal,
                     description = note,
-                    timestamp = System.currentTimeMillis(),
-                    userId = userId
+                    timestamp = System.currentTimeMillis()
                 )
-                expenseViewModel.getTotalExpenseForBudget(userId,budgetId) { currentTotal ->
-                    budgetViewModel.getBudgetById(budgetId) { budget ->
-                        if (budget == null) {
-                            Toast.makeText(requireContext(), "Budget tidak ditemukan", Toast.LENGTH_SHORT).show()
-                            return@getBudgetById
-                        }
 
-                        val totalSetelahTambah = currentTotal + nominal
-                        val sisa = budget.amount - currentTotal
-                        if (totalSetelahTambah > budget.amount) {
-                            Toast.makeText(
-                                requireContext(),
-                                "Total melebihi budget \"${budget.name}\" (maks. Rp ${budget.amount}) dan sisa Rp. $sisa",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        } else {
-                            expenseViewModel.insert(expense)
-                            Toast.makeText(requireContext(), "Pengeluaran ditambahkan", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
+                expenseViewModel.insert(expense)
+                Toast.makeText(requireContext(), "Pengeluaran ditambahkan", Toast.LENGTH_SHORT).show()
             }
             .setNegativeButton("Batal", null)
             .show()
