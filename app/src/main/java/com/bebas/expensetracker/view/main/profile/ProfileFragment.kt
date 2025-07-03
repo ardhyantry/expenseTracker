@@ -11,13 +11,15 @@ import com.bebas.expensetracker.model.AppDatabase
 import com.bebas.expensetracker.model.User
 import com.bebas.expensetracker.util.SessionManager
 import com.bebas.expensetracker.view.auth.SignInActivity
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ProfileFragment : Fragment() {
 
     private lateinit var binding: FragmentProfileBinding
     private lateinit var session: SessionManager
-    private lateinit var user: User
+    private var user: User? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,12 +34,20 @@ class ProfileFragment : Fragment() {
         val userId = session.getUserId()
         val userDao = AppDatabase.getInstance(requireContext()).userDao()
 
+        // Ambil data user di background thread
         lifecycleScope.launch {
-            user = userDao.getUserById(userId) ?: return@launch
-            binding.tvWelcome.text = "Hai, ${user.firstName} ${user.lastName}"
+            user = withContext(Dispatchers.IO) {
+                userDao.getUserById(userId)
+            }
+
+            user?.let {
+                binding.tvWelcome.text = "Hai, ${it.firstName} ${it.lastName}"
+            } ?: run {
+                showToast("User tidak ditemukan")
+            }
         }
 
-        // tombol GANTI PASSWORD
+        // Tombol GANTI PASSWORD
         binding.btnChangePassword.setOnClickListener {
             val oldPassword = binding.etOldPassword.text.toString().trim()
             val newPassword = binding.etNewPassword.text.toString().trim()
@@ -48,7 +58,12 @@ class ProfileFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            if (oldPassword != user.password) {
+            if (user == null) {
+                showToast("User belum dimuat")
+                return@setOnClickListener
+            }
+
+            if (oldPassword != user!!.password) {
                 showToast("Password lama salah")
                 return@setOnClickListener
             }
@@ -58,16 +73,18 @@ class ProfileFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            // update password
             lifecycleScope.launch {
-                val updatedUser = user.copy(password = newPassword)
-                userDao.update(updatedUser)
+                val updatedUser = user!!.copy(password = newPassword)
+                withContext(Dispatchers.IO) {
+                    userDao.update(updatedUser)
+                }
+                user = updatedUser
                 showToast("Password berhasil diperbarui")
                 clearFields()
             }
         }
 
-        // tombol LOGOUT
+        // Tombol LOGOUT
         binding.btnSignOut.setOnClickListener {
             session.clearSession()
             startActivity(Intent(requireContext(), SignInActivity::class.java))

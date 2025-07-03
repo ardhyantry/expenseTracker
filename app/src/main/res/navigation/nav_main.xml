@@ -11,7 +11,7 @@
 
     <fragment
         android:id="@+id/nav_budget"
-        android:name="com.bebas.expensetracker.view.main.budget.BudgetFragment"
+        android:name="com.bebas.expensetracker.view.main.budgeting.BudgetFragment"
         android:label="Budget" />
 
     <fragment
