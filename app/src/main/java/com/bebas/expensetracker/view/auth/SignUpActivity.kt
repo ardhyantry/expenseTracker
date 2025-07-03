@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.bebas.expensetracker.viewmodel.AuthViewModel
 import com.bebas.expensetracker.databinding.ActivitySignUpBinding
 import com.bebas.expensetracker.model.User
+import com.bebas.expensetracker.viewmodel.AuthViewModel
 
 class SignUpActivity : AppCompatActivity() {
 
@@ -25,8 +25,8 @@ class SignUpActivity : AppCompatActivity() {
             val password = binding.etPassword.text.toString()
             val confirmPassword = binding.etConfirmPassword.text.toString()
 
-            if (username.isEmpty() || firstName.isEmpty() || lastName.isEmpty() ||
-                password.isEmpty() || confirmPassword.isEmpty()
+            if (username.isEmpty() || firstName.isEmpty() || lastName.isEmpty()
+                || password.isEmpty() || confirmPassword.isEmpty()
             ) {
                 showToast("Semua field wajib diisi")
                 return@setOnClickListener

@@ -5,16 +5,16 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.bebas.expensetracker.viewmodel.AuthViewModel
 import com.bebas.expensetracker.databinding.ActivitySignInBinding
 import com.bebas.expensetracker.view.main.MainActivity
-import com.bebas.expensetracker.utils.SessionManager
+import com.bebas.expensetracker.util.SessionManager
+import com.bebas.expensetracker.viewmodel.AuthViewModel
 
 class SignInActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySignInBinding
     private lateinit var sessionManager: SessionManager
-    private val viewModel: AuthViewModel by viewModels() // pakai extension
+    private val viewModel: AuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,7 +23,6 @@ class SignInActivity : AppCompatActivity() {
 
         sessionManager = SessionManager(this)
 
-        // Auto-login jika sesi masih ada
         if (sessionManager.isLoggedIn()) {
             navigateToMain()
             return
@@ -34,15 +33,20 @@ class SignInActivity : AppCompatActivity() {
             val password = binding.etPassword.text.toString()
 
             if (username.isEmpty() || password.isEmpty()) {
-                showToast("Username dan password tidak boleh kosong")
+                showToast("Username dan password wajib diisi")
                 return@setOnClickListener
             }
 
             viewModel.loginUser(username, password) { success, message, user ->
                 runOnUiThread {
                     if (success && user != null) {
-                        sessionManager.saveSession(user)
-                        showToast(message)
+                        sessionManager.saveSession(
+                            id = user.id,
+                            username = user.username,
+                            firstName = user.firstName,
+                            lastName = user.lastName
+                        )
+                        showToast("Login berhasil")
                         navigateToMain()
                     } else {
                         showToast(message)

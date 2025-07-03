@@ -3,18 +3,15 @@ package com.bebas.expensetracker.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.yourapp.expensetracker.model.AppDatabase
-import com.yourapp.expensetracker.model.User
+import com.bebas.expensetracker.model.AppDatabase
+import com.bebas.expensetracker.model.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class AuthViewModel(application: Application) : AndroidViewModel(application) {
     private val userDao = AppDatabase.getInstance(application).userDao()
 
-    fun registerUser(
-        user: User,
-        onResult: (success: Boolean, message: String) -> Unit
-    ) {
+    fun registerUser(user: User, onResult: (success: Boolean, message: String) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val existingUser = userDao.getUserByUsername(user.username)
             if (existingUser != null) {
@@ -25,7 +22,6 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
-
     fun loginUser(
         username: String,
         password: String,
