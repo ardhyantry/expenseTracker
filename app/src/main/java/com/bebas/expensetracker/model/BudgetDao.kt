@@ -16,4 +16,8 @@ interface BudgetDao {
 
     @Query("SELECT * FROM budgets WHERE id = :id")
     fun getBudgetById(id: Int): Budget
+
+    @Delete
+    fun delete(budget: Budget)
+
 }
