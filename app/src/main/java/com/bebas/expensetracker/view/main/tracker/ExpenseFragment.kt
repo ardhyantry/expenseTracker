@@ -1,60 +1,129 @@
 package com.bebas.expensetracker.view.main.tracker
 
+import android.app.AlertDialog
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.*
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bebas.expensetracker.R
+import com.bebas.expensetracker.databinding.FragmentExpenseBinding
+import com.bebas.expensetracker.model.Expense
+import com.bebas.expensetracker.util.DateUtils
+import com.bebas.expensetracker.view.main.adapter.ExpenseAdapter
+import com.bebas.expensetracker.viewmodel.BudgetViewModel
+import com.bebas.expensetracker.viewmodel.ExpenseViewModel
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [ExpenseFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ExpenseFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var binding: FragmentExpenseBinding
+    private lateinit var expenseViewModel: ExpenseViewModel
+    private lateinit var budgetViewModel: BudgetViewModel
+    private lateinit var adapter: ExpenseAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_expense, container, false)
+    ): View {
+        binding = FragmentExpenseBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ExpenseFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ExpenseFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        expenseViewModel = ViewModelProvider(this)[ExpenseViewModel::class.java]
+        budgetViewModel = ViewModelProvider(this)[BudgetViewModel::class.java]
+
+        val budgetMap = mutableMapOf<Int, String>()
+
+        adapter = ExpenseAdapter(onItemClick = { showDetailDialog(it) }, budgetIdToNameMap = budgetMap)
+        binding.rvExpense.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvExpense.adapter = adapter
+
+        budgetViewModel.allBudgets.observe(viewLifecycleOwner) { budgets ->
+            budgetMap.clear()
+            budgets.forEach { budgetMap[it.id] = it.name }
+            adapter.notifyDataSetChanged()
+        }
+
+        expenseViewModel.allExpenses.observe(viewLifecycleOwner) {
+            adapter.submitList(it)
+        }
+
+        binding.fabAddExpense.setOnClickListener {
+            showAddExpenseDialog()
+        }
+    }
+
+    private fun showDetailDialog(expense: Expense) {
+        val message = """
+            Tanggal: ${DateUtils.formatDate(expense.timestamp)}
+            Nominal: Rp ${expense.amount}
+            Budget ID: ${expense.budgetId}
+            Keterangan: ${expense.description}
+        """.trimIndent()
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Detail Pengeluaran")
+            .setMessage(message)
+            .setPositiveButton("OK", null)
+            .show()
+    }
+
+    private fun showAddExpenseDialog() {
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_new_expense, null)
+        val spinner = dialogView.findViewById<Spinner>(R.id.spinnerBudget)
+        val etAmount = dialogView.findViewById<EditText>(R.id.etAmount)
+        val etNote = dialogView.findViewById<EditText>(R.id.etNote)
+
+        val budgetNames = mutableListOf<String>()
+        val budgetIds = mutableListOf<Int>()
+
+        budgetViewModel.allBudgets.observe(viewLifecycleOwner) { budgets ->
+            budgetNames.clear()
+            budgetIds.clear()
+            budgets.forEach {
+                budgetNames.add(it.name)
+                budgetIds.add(it.id)
             }
+            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, budgetNames)
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = adapter
+        }
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Tambah Pengeluaran")
+            .setView(dialogView)
+            .setPositiveButton("Tambah") { _, _ ->
+                val amountStr = etAmount.text.toString().trim()
+                val note = etNote.text.toString().trim()
+                val selectedIdx = spinner.selectedItemPosition
+                val budgetId = budgetIds.getOrNull(selectedIdx) ?: -1
+
+                if (amountStr.isEmpty() || budgetId == -1) {
+                    Toast.makeText(requireContext(), "Data tidak lengkap", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+
+                val nominal = amountStr.toIntOrNull() ?: 0
+                if (nominal <= 0) {
+                    Toast.makeText(requireContext(), "Nominal tidak valid", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+
+                val expense = Expense(
+                    budgetId = budgetId,
+                    amount = nominal,
+                    description = note,
+                    timestamp = System.currentTimeMillis()
+                )
+
+                expenseViewModel.insertExpense(expense)
+                Toast.makeText(requireContext(), "Pengeluaran ditambahkan", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Batal", null)
+            .show()
     }
 }
