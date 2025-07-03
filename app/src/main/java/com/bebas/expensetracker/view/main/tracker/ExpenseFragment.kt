@@ -120,7 +120,7 @@ class ExpenseFragment : Fragment() {
                     timestamp = System.currentTimeMillis()
                 )
 
-                expenseViewModel.insertExpense(expense)
+                expenseViewModel.insert(expense)
                 Toast.makeText(requireContext(), "Pengeluaran ditambahkan", Toast.LENGTH_SHORT).show()
             }
             .setNegativeButton("Batal", null)

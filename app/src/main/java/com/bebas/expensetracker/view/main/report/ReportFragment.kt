@@ -37,7 +37,6 @@ class ReportFragment : Fragment() {
         binding.rvReport.layoutManager = LinearLayoutManager(requireContext())
         binding.rvReport.adapter = reportAdapter
 
-        // Pantau semua budget
         budgetViewModel.allBudgets.observe(viewLifecycleOwner) { budgets ->
             val reportList = mutableListOf<ReportItem>()
             var totalPengeluaran = 0
