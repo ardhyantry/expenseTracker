@@ -119,9 +119,27 @@ class ExpenseFragment : Fragment() {
                     description = note,
                     timestamp = System.currentTimeMillis()
                 )
+                expenseViewModel.getTotalExpenseForBudget(budgetId) { currentTotal ->
+                    budgetViewModel.getBudgetById(budgetId) { budget ->
+                        if (budget == null) {
+                            Toast.makeText(requireContext(), "Budget tidak ditemukan", Toast.LENGTH_SHORT).show()
+                            return@getBudgetById
+                        }
 
-                expenseViewModel.insert(expense)
-                Toast.makeText(requireContext(), "Pengeluaran ditambahkan", Toast.LENGTH_SHORT).show()
+                        val totalSetelahTambah = currentTotal + nominal
+                        val sisa = budget.amount - currentTotal
+                        if (totalSetelahTambah > budget.amount) {
+                            Toast.makeText(
+                                requireContext(),
+                                "Total melebihi budget \"${budget.name}\" (maks. Rp ${sisa})",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        } else {
+                            expenseViewModel.insert(expense)
+                            Toast.makeText(requireContext(), "Pengeluaran ditambahkan", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
             }
             .setNegativeButton("Batal", null)
             .show()

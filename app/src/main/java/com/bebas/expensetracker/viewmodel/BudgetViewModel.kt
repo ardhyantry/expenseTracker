@@ -41,4 +41,13 @@ class BudgetViewModel(application: Application) : AndroidViewModel(application),
         super.onCleared()
         job.cancel()
     }
+    fun getBudgetById(budgetId: Int, callback: (Budget?) -> Unit) {
+        launch {
+            val budget = budgetDao.getBudgetById(budgetId)
+            withContext(Dispatchers.Main) {
+                callback(budget)
+            }
+        }
+    }
+
 }
