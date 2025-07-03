@@ -34,20 +34,18 @@ class ProfileFragment : Fragment() {
         val userId = session.getUserId()
         val userDao = AppDatabase.getInstance(requireContext()).userDao()
 
-        // Ambil data user di background thread
         lifecycleScope.launch {
             user = withContext(Dispatchers.IO) {
                 userDao.getUserById(userId)
             }
 
-            user?.let {
-                binding.tvWelcome.text = "Hai, ${it.firstName} ${it.lastName}"
-            } ?: run {
+            if (user != null) {
+                binding.user = user
+            } else {
                 showToast("User tidak ditemukan")
             }
         }
 
-        // Tombol GANTI PASSWORD
         binding.btnChangePassword.setOnClickListener {
             val oldPassword = binding.etOldPassword.text.toString().trim()
             val newPassword = binding.etNewPassword.text.toString().trim()
@@ -79,12 +77,12 @@ class ProfileFragment : Fragment() {
                     userDao.update(updatedUser)
                 }
                 user = updatedUser
+                binding.user = user
                 showToast("Password berhasil diperbarui")
                 clearFields()
             }
         }
 
-        // Tombol LOGOUT
         binding.btnSignOut.setOnClickListener {
             session.clearSession()
             startActivity(Intent(requireContext(), SignInActivity::class.java))
