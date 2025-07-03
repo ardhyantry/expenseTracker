@@ -24,6 +24,7 @@ class ExpenseFragment : Fragment() {
     private lateinit var expenseViewModel: ExpenseViewModel
     private lateinit var budgetViewModel: BudgetViewModel
     private lateinit var adapter: ExpenseAdapter
+    private val budgetMap = mutableMapOf<Int, String>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,19 +61,25 @@ class ExpenseFragment : Fragment() {
     }
 
     private fun showDetailDialog(expense: Expense) {
+        val budgetName = budgetMap[expense.budgetId] ?: "Tidak diketahui"
+        val tanggal = DateUtils.formatDate(expense.timestamp)
+        val nominal = "Rp %,d".format(expense.amount)
+
         val message = """
-            Tanggal: ${DateUtils.formatDate(expense.timestamp)}
-            Nominal: Rp ${expense.amount}
-            Budget ID: ${expense.budgetId}
-            Keterangan: ${expense.description}
-        """.trimIndent()
+        📅 Tanggal     : $tanggal
+        🧾 Nominal     : $nominal
+        📂 Budget      : $budgetName
+        📝 Keterangan  : ${expense.description}
+    """.trimIndent()
 
         AlertDialog.Builder(requireContext())
-            .setTitle("Detail Pengeluaran")
+            .setTitle("📊 Detail Pengeluaran")
             .setMessage(message)
-            .setPositiveButton("OK", null)
+            .setPositiveButton("Tutup", null)
             .show()
     }
+
+
 
     private fun showAddExpenseDialog() {
         val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_new_expense, null)
