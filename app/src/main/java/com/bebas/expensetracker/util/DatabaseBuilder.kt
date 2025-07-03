@@ -14,17 +14,17 @@ fun buildDb(context: Context): AppDatabase {
         AppDatabase::class.java,
         DB_NAME
     )
-        .addMigrations(MIGRATION_1_2)
-        .fallbackToDestructiveMigrationOnDowngrade() // opsional
+        .fallbackToDestructiveMigration()
         .build()
 }
 
 // Contoh migrasi dari versi 1 ke 2
 val MIGRATION_1_2 = object : Migration(1, 2) {
     override fun migrate(database: SupportSQLiteDatabase) {
-        // Contoh: Menambah kolom "notes" pada tabel expenses
-        database.execSQL(
-            "ALTER TABLE expenses ADD COLUMN notes TEXT"
-        )
+        // Tambahkan kolom notes ke expenses (jika kamu tetap butuh)
+        database.execSQL("ALTER TABLE expenses ADD COLUMN notes TEXT")
+
+        // ✅ Tambahkan kolom userId ke budgets
+        database.execSQL("ALTER TABLE budgets ADD COLUMN userId INTEGER NOT NULL DEFAULT 0")
     }
 }

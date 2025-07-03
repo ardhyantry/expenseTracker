@@ -17,6 +17,9 @@ interface BudgetDao {
     @Query("SELECT * FROM budgets WHERE id = :id")
     fun getBudgetById(id: Int): Budget
 
+    @Query("SELECT * FROM budgets WHERE userId = :userId")
+    fun getBudgetsByUser(userId: Int): LiveData<List<Budget>>
+
     @Delete
     fun delete(budget: Budget)
 

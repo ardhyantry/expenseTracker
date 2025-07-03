@@ -17,6 +17,10 @@ class ExpenseViewModel(application: Application) : AndroidViewModel(application)
     private val dao = AppDatabase.getInstance(application).expenseDao()
     val allExpenses: LiveData<List<Expense>> = dao.getAllExpenses()
 
+    fun getExpensesForUser(userId: Int): LiveData<List<Expense>> {
+        return dao.getExpensesByUser(userId)
+    }
+
     fun insert(expense: Expense) {
         launch {
             dao.insert(expense)

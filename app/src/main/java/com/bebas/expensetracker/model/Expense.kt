@@ -9,5 +9,6 @@ data class Expense(
     val budgetId: Int,
     val amount: Int,
     val description: String,
-    val timestamp: Long
+    val timestamp: Long,
+    val userId: Int
 )

@@ -13,6 +13,7 @@ import com.bebas.expensetracker.R
 import com.bebas.expensetracker.databinding.FragmentExpenseBinding
 import com.bebas.expensetracker.model.Expense
 import com.bebas.expensetracker.util.DateUtils
+import com.bebas.expensetracker.util.SessionManager
 import com.bebas.expensetracker.view.main.adapter.ExpenseAdapter
 import com.bebas.expensetracker.viewmodel.BudgetViewModel
 import com.bebas.expensetracker.viewmodel.ExpenseViewModel
@@ -35,6 +36,7 @@ class ExpenseFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         expenseViewModel = ViewModelProvider(this)[ExpenseViewModel::class.java]
         budgetViewModel = ViewModelProvider(this)[BudgetViewModel::class.java]
+        val userId = SessionManager(requireContext()).getUserId()
 
         val budgetMap = mutableMapOf<Int, String>()
 
@@ -42,13 +44,13 @@ class ExpenseFragment : Fragment() {
         binding.rvExpense.layoutManager = LinearLayoutManager(requireContext())
         binding.rvExpense.adapter = adapter
 
-        budgetViewModel.allBudgets.observe(viewLifecycleOwner) { budgets ->
+        budgetViewModel.getBudgetsForUser(userId).observe(viewLifecycleOwner) { budgets ->
             budgetMap.clear()
             budgets.forEach { budgetMap[it.id] = it.name }
             adapter.notifyDataSetChanged()
         }
 
-        expenseViewModel.allExpenses.observe(viewLifecycleOwner) {
+        expenseViewModel.getExpensesForUser(userId).observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }
 
@@ -77,11 +79,12 @@ class ExpenseFragment : Fragment() {
         val spinner = dialogView.findViewById<Spinner>(R.id.spinnerBudget)
         val etAmount = dialogView.findViewById<EditText>(R.id.etAmount)
         val etNote = dialogView.findViewById<EditText>(R.id.etNote)
+        val userId = SessionManager(requireContext()).getUserId()
 
         val budgetNames = mutableListOf<String>()
         val budgetIds = mutableListOf<Int>()
 
-        budgetViewModel.allBudgets.observe(viewLifecycleOwner) { budgets ->
+        budgetViewModel.getBudgetsForUser(userId).observe(viewLifecycleOwner) { budgets ->
             budgetNames.clear()
             budgetIds.clear()
             budgets.forEach {
@@ -117,7 +120,8 @@ class ExpenseFragment : Fragment() {
                     budgetId = budgetId,
                     amount = nominal,
                     description = note,
-                    timestamp = System.currentTimeMillis()
+                    timestamp = System.currentTimeMillis(),
+                    userId = userId
                 )
                 expenseViewModel.getTotalExpenseForBudget(budgetId) { currentTotal ->
                     budgetViewModel.getBudgetById(budgetId) { budget ->

@@ -17,4 +17,7 @@ interface ExpenseDao {
 
     @Query("SELECT * FROM expenses WHERE id = :id")
     fun getExpenseById(id: Int): Expense
+
+    @Query("SELECT * FROM expenses WHERE userId = :userId")
+    fun getExpensesByUser(userId: Int): LiveData<List<Expense>>
 }

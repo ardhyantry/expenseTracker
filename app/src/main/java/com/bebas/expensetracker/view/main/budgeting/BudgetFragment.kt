@@ -15,6 +15,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.widget.EditText
 import android.widget.Toast
 import com.bebas.expensetracker.R
+import com.bebas.expensetracker.util.SessionManager
 
 class BudgetFragment : Fragment() {
 
@@ -54,7 +55,8 @@ class BudgetFragment : Fragment() {
     }
 
     private fun observeData() {
-        budgetViewModel.allBudgets.observe(viewLifecycleOwner) { list ->
+        val userId = SessionManager(requireContext()).getUserId()
+        budgetViewModel.getBudgetsForUser(userId).observe(viewLifecycleOwner) { list ->
             budgetAdapter.updateList(list)
         }
     }
@@ -77,6 +79,7 @@ class BudgetFragment : Fragment() {
             .setPositiveButton("Simpan") { _, _ ->
                 val name = etName.text.toString().trim()
                 val amount = etAmount.text.toString().toIntOrNull() ?: -1
+                val userId = SessionManager(requireContext()).getUserId()
 
                 if (name.isEmpty()) {
                     Toast.makeText(context, "Nama budget tidak boleh kosong", Toast.LENGTH_SHORT).show()
@@ -90,7 +93,8 @@ class BudgetFragment : Fragment() {
                 val budget = Budget(
                     id = existingBudget?.id ?: 0,
                     name = name,
-                    amount = amount
+                    amount = amount,
+                    userId = userId
                 )
 
                 if (existingBudget == null) {
