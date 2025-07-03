@@ -27,9 +27,9 @@ class ExpenseViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun getTotalExpenseForBudget(budgetId: Int, callback: (Int) -> Unit) {
+    fun getTotalExpenseForBudget(userId: Int, budgetId: Int, callback: (Int) -> Unit) {
         launch {
-            val total = dao.getTotalExpenseForBudget(budgetId) ?: 0
+            val total = dao.getTotalExpenseForBudget(userId, budgetId) ?: 0
             withContext(Dispatchers.Main) {
                 callback(total)
             }
