@@ -123,7 +123,7 @@ class ExpenseFragment : Fragment() {
                     timestamp = System.currentTimeMillis(),
                     userId = userId
                 )
-                expenseViewModel.getTotalExpenseForBudget(budgetId) { currentTotal ->
+                expenseViewModel.getTotalExpenseForBudget(userId,budgetId) { currentTotal ->
                     budgetViewModel.getBudgetById(budgetId) { budget ->
                         if (budget == null) {
                             Toast.makeText(requireContext(), "Budget tidak ditemukan", Toast.LENGTH_SHORT).show()
