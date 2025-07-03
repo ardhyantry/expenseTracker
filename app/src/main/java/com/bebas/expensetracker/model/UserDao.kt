@@ -13,4 +13,7 @@ interface UserDao {
 
     @Update
     fun update(user: User)
+
+    @Query("SELECT * FROM users WHERE id = :id LIMIT 1")
+    suspend fun getUserById(id: Int): User?
 }
