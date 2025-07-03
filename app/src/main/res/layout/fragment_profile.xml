@@ -102,10 +102,10 @@
                     android:id="@+id/btnChangePassword"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:backgroundTint="#000000"
                     android:text="CHANGE PASSWORD"
-                    android:backgroundTint="@color/purple_700"
-                    android:textColor="@android:color/white"
-                    android:layout_marginStart="16dp" />
+                    android:textColor="@android:color/white" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
